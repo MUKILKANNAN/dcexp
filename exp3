@@ -1,0 +1,40 @@
+clc;
+clear;
+close all;
+
+bits = [1 0 1 1 0];
+
+signal = 2*bits - 1;
+
+pulse = ones(1,10);
+
+tx = repelem(signal,10);
+
+rx = tx + 0.5*randn(size(tx));
+
+h = fliplr(pulse);
+
+output = conv(rx,h);
+
+figure;
+
+subplot(3,1,1);
+plot(tx);
+title('Transmitted Signal');
+xlabel('Time');
+ylabel('Amplitude');
+grid on;
+
+subplot(3,1,2);
+plot(rx);
+title('Received Signal with Noise');
+xlabel('Time');
+ylabel('Amplitude');
+grid on;
+
+subplot(3,1,3);
+plot(output);
+title('Matched Filter Output');
+xlabel('Time');
+ylabel('Amplitude');
+grid on;
