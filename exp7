@@ -1,0 +1,40 @@
+clc;
+clear;
+close all;
+
+data = [1 0 1 1 0 0 1 0];
+
+msg = repelem(data,100);
+
+t = linspace(0,length(data),length(msg));
+
+c1 = cos(2*pi*5*t);
+c2 = cos(2*pi*2*t);
+
+ask = msg .* c1;
+
+fsk = msg .* c1 + (1-msg) .* c2;
+
+figure;
+
+subplot(3,1,1);
+plot(t,msg,'LineWidth',2);
+title('Message Signal');
+xlabel('Time');
+ylabel('Amplitude');
+ylim([-0.2 1.2]);
+grid on;
+
+subplot(3,1,2);
+plot(t,ask);
+title('ASK Modulated Signal');
+xlabel('Time');
+ylabel('Amplitude');
+grid on;
+
+subplot(3,1,3);
+plot(t,fsk);
+title('FSK Modulated Signal');
+xlabel('Time');
+ylabel('Amplitude');
+grid on;
