@@ -1,0 +1,49 @@
+clc;
+clear;
+close all;
+
+n = input('Enter number of symbols: ');
+
+symbols = cell(1,n);
+prob = zeros(1,n);
+
+for i = 1:n
+    symbols{i} = sprintf('m%d',i);
+    prob(i) = input(sprintf('P(%s) = ',symbols{i}));
+end
+
+if any(prob <= 0) || abs(sum(prob)-1) > 1e-6
+    error('Probabilities must be positive and sum to 1');
+end
+
+H = -sum(prob .* log2(prob));
+
+dict = huffmandict(symbols,prob);
+
+L = 0;
+
+fprintf('\nSymbol\tProbability\tCode\tLength\n');
+
+for i = 1:n
+    code = sprintf('%d',dict{i,2});
+    len = length(dict{i,2});
+
+    fprintf('%s\t%.4f\t\t%s\t%d\n', ...
+        symbols{i},prob(i),code,len);
+
+    L = L + prob(i)*len;
+end
+
+Efficiency = (H/L)*100;
+Redundancy = 100-Efficiency;
+
+fprintf('\nEntropy: %.4f bits/symbol\n',H);
+fprintf('Average Code Length: %.4f bits/symbol\n',L);
+fprintf('Coding Efficiency: %.2f %%\n',Efficiency);
+fprintf('Redundancy: %.2f %%\n',Redundancy);
+
+if H <= L && L < H+1
+    fprintf('Source Coding Theorem: VERIFIED\n');
+else
+    fprintf('Source Coding Theorem: NOT VERIFIED\n');
+end
