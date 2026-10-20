@@ -1,0 +1,96 @@
+clc;
+clear;
+close all;
+
+data = [1 0 1 1 0 1 0 0];
+
+pn = [1 0 1 1];
+
+data_b = 2*data - 1;
+pn_b = 2*pn - 1;
+
+dsss = [];
+
+for i = 1:length(data)
+    dsss = [dsss data_b(i)*pn_b];
+end
+
+recovered_dsss = [];
+
+for i = 1:length(data)
+    start = (i-1)*length(pn)+1;
+    stop = i*length(pn);
+
+    r = dsss(start:stop);
+    result = r .* pn_b;
+
+    if sum(result) > 0
+        recovered_dsss = [recovered_dsss 1];
+    else
+        recovered_dsss = [recovered_dsss 0];
+    end
+end
+
+Fs = 1000;
+Tb = 1;
+fc = [50 100 150 200];
+hop = [1 3 2 4 1 4 3 2];
+
+fhss = [];
+time = [];
+
+for i = 1:length(data)
+    t = (i-1)*Tb:1/Fs:i*Tb-1/Fs;
+    f = fc(hop(i));
+
+    if data(i) == 1
+        signal = cos(2*pi*f*t);
+    else
+        signal = -cos(2*pi*f*t);
+    end
+
+    fhss = [fhss signal];
+    time = [time t];
+end
+
+disp('Original Data:');
+disp(data);
+
+disp('DSSS Recovered Data:');
+disp(recovered_dsss);
+
+disp('FHSS Hopping Frequencies:');
+disp(fc(hop));
+
+figure;
+
+subplot(5,1,1);
+stairs(data,'LineWidth',2);
+title('Original Data');
+ylim([-1 2]);
+grid on;
+
+subplot(5,1,2);
+stairs(dsss,'LineWidth',1);
+title('DSSS Spread Signal');
+grid on;
+
+subplot(5,1,3);
+stairs(recovered_dsss,'LineWidth',2);
+title('DSSS Recovered Data');
+ylim([-1 2]);
+grid on;
+
+subplot(5,1,4);
+plot(time,fhss);
+title('FHSS Signal');
+xlabel('Time');
+ylabel('Amplitude');
+grid on;
+
+subplot(5,1,5);
+stairs(1:length(data),fc(hop),'LineWidth',2);
+title('FHSS Frequency Hopping');
+xlabel('Bit Number');
+ylabel('Frequency (Hz)');
+grid on;
