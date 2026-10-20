@@ -1,0 +1,58 @@
+clc;
+clear;
+close all;
+
+k = 4;
+n = 7;
+
+P = randi([0 1],k,n-k);
+
+G = [eye(k) P];
+H = [P' eye(n-k)];
+
+disp('Generator Matrix G:');
+disp(G);
+
+disp('Parity Check Matrix H:');
+disp(H);
+
+msg = randi([0 1],1,k);
+disp('Original Message:');
+disp(msg);
+
+codeword = mod(msg*G,2);
+disp('Encoded Codeword:');
+disp(codeword);
+
+received = codeword;
+error_pos = randi(n);
+received(error_pos) = 1-received(error_pos);
+
+fprintf('Error introduced at position %d\n',error_pos);
+disp('Received Codeword:');
+disp(received);
+
+syndrome = mod(H*received',2);
+disp('Syndrome:');
+disp(syndrome');
+
+corrected = received;
+
+if any(syndrome)
+    for i = 1:n
+        if isequal(H(:,i),syndrome)
+            corrected(i) = 1-corrected(i);
+            fprintf('Error corrected at position %d\n',i);
+            break;
+        end
+    end
+else
+    disp('No Error Detected');
+end
+
+disp('Corrected Codeword:');
+disp(corrected);
+
+decoded = corrected(1:k);
+disp('Decoded Message:');
+disp(decoded);
